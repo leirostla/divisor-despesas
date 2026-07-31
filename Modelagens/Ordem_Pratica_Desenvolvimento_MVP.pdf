@@ -1876,3 +1876,68 @@ trailer
 startxref
 123716
 %%EOF
+110 0 obj
+<</Contents 205 0 R/MediaBox[ 0 0 595.2756 841.8898]/Parent 195 0 R/Resources<</Font 1 0 R/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]>>/Rotate 0/Trans<<>>/Type/Page/Annots 226 0 R>>
+endobj
+226 0 obj
+[ 227 0 R 228 0 R]
+endobj
+227 0 obj
+<</Type/Annot/Subtype/Highlight/P 110 0 R/F 4/M(D:20260731102642-03'00')/NM(53653297-a041-4f2a-8f48-82efd6ad7ee5)/Rect[ 89.15541 464.4469 175.51791 478.8219]/C[ 1 .941176 .4]/Popup 228 0 R/CA 1/CreationDate(D:20260731102642-03'00')/QuadPoints[ 89.15541 478.8219 175.51791 478.8219 89.15541 464.4469 175.51791 464.4469]/AP<</N 239 0 R>>/Contents(ParticipanteGrupo)>>
+endobj
+228 0 obj
+<</Type/Annot/Subtype/Popup/Open false/F 28/Rect[ 612 358.8219 792 478.8219]/Parent 227 0 R>>
+endobj
+237 0 obj
+<</Length 110/Type/XObject/Subtype/Form/FormType 1/BBox[ 89.15541 464.4469 175.51791 478.8219]/Matrix[ 1 0 0 1 -89.15541 -464.4469]/Resources<</ProcSet[/PDF]>>>>
+stream
+1 .941176 .4 rg
+.898438 w
+89.15541 464.4469 m
+89.15541 478.8219 l
+175.51791 478.8219 l
+175.51791 464.4469 l
+f
+
+endstream
+endobj
+238 0 obj
+<</Length 9/Type/XObject/Subtype/Form/FormType 1/BBox[ 0 0 86.3625 14.375]/Matrix[ 1 0 0 1 0 0]/Resources<</ProcSet[/PDF]/XObject<</Form 237 0 R>>>>/Group<</S/Transparency>>>>
+stream
+/Form Do
+
+endstream
+endobj
+239 0 obj
+<</Length 20/Type/XObject/Subtype/Form/FormType 1/BBox[ 0 0 86.3625 14.375]/Matrix[ 1 0 0 1 0 0]/Resources<</ProcSet[/PDF]/XObject<</MWFOForm 238 0 R>>/ExtGState<</R0 240 0 R>>>>>>
+stream
+/R0 gs
+/MWFOForm Do
+
+endstream
+endobj
+240 0 obj
+<</Type/ExtGState/AIS false/BM/Multiply>>
+endobj
+144 0 obj
+<</Author(OpenAI)/CreationDate(D:20260730164309+00'00')/Creator((unspecified))/Keywords()/ModDate(D:20260731102829-03'00')/Producer(ReportLab PDF Library - (opensource))/Subject((unspecified))/Title(Ordem Prática de Desenvolvimento do MVP)/Trapped/False>>
+endobj
+xref
+110 1
+0000128457 00000 n
+144 1
+0000130008 00000 n
+226 3
+0000128653 00000 n
+0000128689 00000 n
+0000129072 00000 n
+237 4
+0000129183 00000 n
+0000129491 00000 n
+0000129712 00000 n
+0000129949 00000 n
+trailer
+<</ID[<165BD0DAA92DBA8DC5D44FC98C62CC49><9B7B8882AB2F25017F3D52383DEFBFD0>]/Info 144 0 R/Root 143 0 R/Size 241/Prev 123716>>
+startxref
+130281
+%%EOF
