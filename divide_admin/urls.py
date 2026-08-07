@@ -1,5 +1,5 @@
 """
-URL configuration for config project.
+URL configuration for divide_admin project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -15,14 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
-
-from app_usuarios import views
+from django.urls import path
 
 urlpatterns = [
-    # rota, view responsável, nome de referência
     path('admin/', admin.site.urls),
-    path('contas/', include('django.contrib.auth.urls')),
-    path('', views.home, name='home')
-
 ]

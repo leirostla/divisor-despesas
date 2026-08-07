@@ -13,3 +13,7 @@ Python 3.14.6
 - Criado superuser: admin; senha:123456
 - Adicionados os modelos nos arquivos admin.py das aplicações para poder popular
 
+## 07/08/2026
+- Depois de estudar o livro Django de A a Z, decidi remodelar todo o sistema e recomeçar toda o sistema novamente.
+- Retirei o SQLite do gitignore
+
