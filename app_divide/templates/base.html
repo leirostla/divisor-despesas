@@ -1,37 +1,57 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Organize grupos, registre despesas e descubra quem deve pagar quem.">
+    <meta name="theme-color" content="#2563eb">
+    <title>{% block title %}Início{% endblock %} | Divide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     {% block styles %}{% endblock %}
-    <title>Divide - {% block title %}{% endblock %}</title>
 </head>
-
-<body>
-    <header>
-        <nav class="navbar justify-content-end navbar-expand-lg">
-            <ul class="nav">
-                <li class="nav-item"><a class="nav-link" href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="fafa-sign-in"></i> Entrar</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="fa fa-edit"></i> Registrar</a></li>
-            </ul>
-        </nav>
+<body class="{% block body_class %}{% endblock %}">
+    <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="{% url 'home' %}" aria-label="Divide — página inicial">
+                <span class="brand-mark" aria-hidden="true">D</span><span>Divide</span>
+            </a>
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a class="nav-link" href="{% url 'home' %}">Início</a>
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'sumario' %}">Resumo</a>
+                    <a class="nav-link" href="#">Meu perfil</a>
+                    <span class="user-greeting">Olá, {{ user.get_short_name|default:user.username }}</span>
+                {% else %}
+                    <a class="nav-link" href="#">Entrar</a>
+                    <a class="button button-primary button-small" href="#">Criar conta</a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
-    {% block content %}{% endblock %}
-    <footer class="page-footer font-small">
-        <div class="footer-copyright text-center py-3">©2020 Copyright:
-        <a href="https://www.casadocodigo.com.br/"> Casadocodigo.com.br</a>
+    {% if messages %}
+        <div class="container messages" aria-live="polite">
+            {% for message in messages %}
+                <div class="message{% if message.tags %} message-{{ message.tags }}{% endif %}" role="status">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <main id="main-content" class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <a class="brand brand-footer" href="{% url 'home' %}">
+                <span class="brand-mark" aria-hidden="true">D</span><span>Divide</span>
+            </a>
+            <p>Divida despesas sem complicação.</p>
+            <p>&copy; {% now "Y" %} Divide</p>
         </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
-
 </html>

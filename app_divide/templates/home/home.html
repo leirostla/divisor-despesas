@@ -1,16 +1,56 @@
 {% extends "base.html" %}
 {% load static %}
-
-{% block title %}Início{% endblock %}
-
+{% block title %}Divida despesas sem complicação{% endblock %}
+{% block body_class %}home-page{% endblock %}
 {% block styles %}
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
-
 {% block content %}
-<div id="content">Olá mundo</div> 
-{% endblock %}
-
-{% block scripts %}
-    <script src="{% static 'js/home.js' %}"></script>
+    <section class="hero">
+        <div class="container hero-content">
+            <div>
+                <p class="hero-eyebrow">Contas compartilhadas, organização simples</p>
+                <h1>Dividir despesas não precisa dar trabalho.</h1>
+                <p class="hero-description">Crie grupos, registre os gastos e acompanhe de forma clara quem pagou e quem ainda precisa acertar.</p>
+                <div class="hero-actions">
+                    {% if user.is_authenticated %}
+                        <a class="button button-primary" href="{% url 'sumario' %}">Acessar meu resumo</a>
+                    {% else %}
+                        <a class="button button-primary" href="#">Criar minha conta</a>
+                        <a class="button button-secondary" href="#how-it-works">Como funciona</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="hero-visual" aria-label="Exemplo de divisão de uma despesa">
+                <div class="demo-card">
+                    <span class="demo-label">Viagem de férias</span>
+                    <strong>R$ 1.250,00</strong>
+                    <div class="demo-row"><span>Ana pagou</span><b>R$ 750,00</b></div>
+                    <div class="demo-row"><span>Bruno pagou</span><b>R$ 500,00</b></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="how-it-works"
+             class="container features"
+             aria-labelledby="features-title">
+        <div class="features-heading">
+            <p class="hero-eyebrow">Como funciona</p>
+            <h2 id="features-title">Tudo o que você precisa para organizar as contas</h2>
+        </div>
+        <div class="feature-grid">
+            <article><span>01</span>
+                <h3>Crie um grupo</h3>
+                <p>Reúna as pessoas de uma viagem, casa ou evento.</p>
+            </article>
+            <article><span>02</span>
+                <h3>Registre as despesas</h3>
+                <p>Informe o valor, a descrição e quem realizou o pagamento.</p>
+            </article>
+            <article><span>03</span>
+                <h3>Acompanhe o resumo</h3>
+                <p>Visualize os gastos do grupo em um único lugar.</p>
+            </article>
+        </div>
+    </section>
 {% endblock %}
