@@ -1,55 +1,61 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block title %}Resumo{% endblock %}
-
-{% block styles %}<link rel="stylesheet" href="{% static 'css/sumario.css' %}">{% endblock %}
-
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/sumario.css' %}">
+{% endblock %}
 {% block content %}
-<div class="container summary-layout">
-    <aside class="summary-sidebar" aria-label="Seus grupos e contatos">
-        <section class="sidebar-section" aria-labelledby="groups-title">
-            <div class="section-heading">
-                <div><p class="eyebrow">Organização</p><h2 id="groups-title">Meus grupos</h2></div>
-                <button class="icon-button" type="button" aria-label="Criar novo grupo" title="Criar novo grupo">+</button>
-            </div>
-            {% if user.is_authenticated %}
-                {% if grupos %}
-                    <ul class="sidebar-list">
-                        {% for grupo in grupos %}
-                            <li>
-                                <a class="sidebar-item{% if grupo.pk == grupo_selecionado.pk %} is-active{% endif %}"
-                                   href="{% url 'sumario' %}?grupo={{ grupo.pk }}"
-                                   {% if grupo.pk == grupo_selecionado.pk %}aria-current="page"{% endif %}>
-                                    <span class="item-avatar item-avatar-group" aria-hidden="true">{{ grupo.nome|first|upper }}</span>
-                                    <span class="item-content"><strong>{{ grupo.nome }}</strong><small>{{ grupo.participantes_ativos }} participante{{ grupo.participantes_ativos|pluralize }}</small></span>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+    <div class="container summary-layout">
+        <aside class="summary-sidebar" aria-label="Seus grupos e contatos">
+            <section class="sidebar-section" aria-labelledby="groups-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Organização</p>
+                        <h2 id="groups-title">Meus grupos</h2>
+                    </div>
+                    <button class="icon-button"
+                            type="button"
+                            aria-label="Criar novo grupo"
+                            title="Criar novo grupo">+</button>
+                </div>
+                {% if user.is_authenticated %}
+                    {% if grupos %}
+                        <ul class="sidebar-list">
+                            {% for grupo in grupos %}
+                                <li>
+                                    <a class="sidebar-item{% if grupo.pk == grupo_selecionado.pk %} is-active{% endif %}"
+                                       href="{% url 'sumario' %}?grupo={{ grupo.pk }}"
+                                       {% if grupo.pk == grupo_selecionado.pk %}aria-current="page"{% endif %}>
+                                        <span class="item-avatar item-avatar-group" aria-hidden="true">{{ grupo.nome|first|upper }}</span>
+                                        <span class="item-content"><strong>{{ grupo.nome }}</strong><small>{{ grupo.participantes_ativos }} participante{{ grupo.participantes_ativos|pluralize }}</small></span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
                 {% else %}<p class="empty-state">Você ainda não participa de nenhum grupo.</p>{% endif %}
-            {% else %}<p class="empty-state">Entre na sua conta para visualizar seus grupos.</p>{% endif %}
-        </section>
-
-        <section class="sidebar-section" aria-labelledby="people-title">
-            <div class="section-heading">
-                <div><p class="eyebrow">Em comum</p><h2 id="people-title">Pessoas</h2></div>
-                {% if user.is_authenticated %}<span class="count-badge">{{ pessoas|length }}</span>{% endif %}
+{% else %}<p class="empty-state">Entre na sua conta para visualizar seus grupos.</p>{% endif %}
+    </section>
+    <section class="sidebar-section" aria-labelledby="people-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Em comum</p>
+                <h2 id="people-title">Pessoas</h2>
             </div>
-            {% if pessoas %}
-                <ul class="sidebar-list">
-                    {% for pessoa in pessoas %}
-                        <li class="sidebar-item">
-                            <span class="item-avatar" aria-hidden="true">{{ pessoa.get_full_name|default:pessoa.username|first|upper }}</span>
-                            <span class="item-content"><strong>{{ pessoa.get_full_name|default:pessoa.username }}</strong><small>@{{ pessoa.username }}</small></span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% elif user.is_authenticated %}<p class="empty-state">Nenhuma outra pessoa encontrada nos seus grupos.</p>
-            {% else %}<p class="empty-state">As pessoas dos seus grupos aparecerão aqui.</p>{% endif %}
-        </section>
+            {% if user.is_authenticated %}<span class="count-badge">{{ pessoas|length }}</span>{% endif %}
+        </div>
+        {% if pessoas %}
+            <ul class="sidebar-list">
+                {% for pessoa in pessoas %}
+                    <li class="sidebar-item">
+                        <span class="item-avatar" aria-hidden="true">{{ pessoa.get_full_name|default:pessoa.username|first|upper }}</span>
+                        <span class="item-content"><strong>{{ pessoa.get_full_name|default:pessoa.username }}</strong><small>@{{ pessoa.username }}</small></span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% elif user.is_authenticated %}<p class="empty-state">Nenhuma outra pessoa encontrada nos seus grupos.</p>
+{% else %}<p class="empty-state">As pessoas dos seus grupos aparecerão aqui.</p>{% endif %}
+    </section>
     </aside>
-
     <main class="expense-column">
         <section class="content-card">
             <div class="expense-heading">
@@ -58,7 +64,9 @@
                     <h1>{% if grupo_selecionado %}{{ grupo_selecionado.nome }}{% else %}Selecione um grupo{% endif %}</h1>
                 </div>
                 {% if grupo_selecionado %}
-                    <button class="button button-primary button-small" type="button" data-open-expense-modal>+ Adicionar despesa</button>
+                    <button class="button button-primary button-small"
+                            type="button"
+                            data-open-expense-modal>+ Adicionar despesa</button>
                 {% endif %}
             </div>
             {% if despesas %}
@@ -75,44 +83,52 @@
                     {% endfor %}
                 </ul>
             {% elif grupo_selecionado %}<p class="empty-state expense-empty">Este grupo ainda não possui despesas.</p>
-            {% else %}<p class="empty-state expense-empty">Suas despesas aparecerão após você selecionar um grupo.</p>{% endif %}
-        </section>
+{% else %}<p class="empty-state expense-empty">Suas despesas aparecerão após você selecionar um grupo.</p>{% endif %}
+    </section>
     </main>
-
     <aside class="summary-aside" aria-label="Área ainda não definida">
-        <section class="content-card undefined-card"><p>a definir</p></section>
+        <section class="content-card undefined-card">
+            <p>a definir</p>
+        </section>
     </aside>
-</div>
-
-{% if grupo_selecionado %}
-<dialog class="expense-modal" data-expense-modal{% if despesa_form.errors %} data-has-errors{% endif %}>
-    <div class="modal-header">
-        <div>
-            <p class="eyebrow">{{ grupo_selecionado.nome }}</p>
-            <h2>Adicionar despesa</h2>
-        </div>
-        <button class="modal-close" type="button" data-close-expense-modal aria-label="Fechar modal">&times;</button>
     </div>
-    <form method="post" action="{% url 'sumario' %}" novalidate>
-        {% csrf_token %}
-        <input type="hidden" name="grupo" value="{{ grupo_selecionado.pk }}">
-        {% if despesa_form.non_field_errors %}
-            <div class="form-errors">{{ despesa_form.non_field_errors }}</div>
-        {% endif %}
-        {% for field in despesa_form %}
-            <div class="form-field{% if field.errors %} has-error{% endif %}">
-                <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span aria-hidden="true"> *</span>{% endif %}</label>
-                {{ field }}
-                {% if field.errors %}<div class="field-errors">{{ field.errors }}</div>{% endif %}
+    {% if grupo_selecionado %}
+        <dialog class="expense-modal"
+                data-expense-modal{% if despesa_form.errors %}
+                data-has-errors{% endif %}>
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">{{ grupo_selecionado.nome }}</p>
+                    <h2>Adicionar despesa</h2>
+                </div>
+                <button class="modal-close"
+                        type="button"
+                        data-close-expense-modal
+                        aria-label="Fechar modal">&times;</button>
             </div>
-        {% endfor %}
-        <div class="modal-actions">
-            <button class="button button-secondary" type="button" data-close-expense-modal>Cancelar</button>
-            <button class="button button-primary" type="submit">Salvar despesa</button>
-        </div>
-    </form>
-</dialog>
-{% endif %}
+            <form method="post" action="{% url 'sumario' %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="grupo" value="{{ grupo_selecionado.pk }}">
+                {% if despesa_form.non_field_errors %}
+                    <div class="form-errors">{{ despesa_form.non_field_errors }}</div>
+                {% endif %}
+                {% for field in despesa_form %}
+                    <div class="form-field{% if field.errors %} has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span aria-hidden="true"> *</span>{% endif %}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="field-errors">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                <div class="modal-actions">
+                    <button class="button button-secondary"
+                            type="button"
+                            data-close-expense-modal>Cancelar</button>
+                    <button class="button button-primary" type="submit">Salvar despesa</button>
+                </div>
+            </form>
+        </dialog>
+    {% endif %}
 {% endblock %}
-
-{% block scripts %}<script src="{% static 'js/sumario.js' %}" defer></script>{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/sumario.js' %}" defer></script>
+{% endblock %}

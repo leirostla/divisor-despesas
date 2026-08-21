@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Divida despesas sem complicação{% endblock %}
+{% block body_class %}home-page{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+{% block content %}
+    <form method="POST" action="">
+        {% if message is not None %}
+            <div class="alert alert-{{ message.type }}">{{ message.text }}</div>
+        {% endif %}
+        {% csrf_token %}
+        <br>
+        {% for f in form %}
+            <div class="form-group"></div>
+            {{ f.label }}
+            <br>
+            {{ f }}
+        {% endfor %}
+        <br>
+        {% for f in registro_form %}
+            <div class="form-group"></div>
+            {{ f.label }}
+            <br>
+            {{ f }}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">{{ button_text }}</button>
+    </form>
+{% endblock %}

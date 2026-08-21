@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from app_divide.forms.forms import DespesaForm
+from app_divide.forms.despesa_form import DespesaForm
 from app_divide.models import Grupo, ParticipanteGrupo
 
 
@@ -82,13 +82,7 @@ def sumario_view(request):
 
 def consultas_view(request):
 
-
     participante_grupo = ParticipanteGrupo.objects.filter(usuario=request.user)
-
-
-    for p in participante_grupo:
-        print(p.grupo.pk)
-   
-    
+    print(participante_grupo)    
 
     return render(request, template_name='home/consultas.html')
