@@ -13,10 +13,14 @@
                         <p class="eyebrow">Organização</p>
                         <h2 id="groups-title">Meus grupos</h2>
                     </div>
-                    <button class="icon-button"
-                            type="button"
-                            aria-label="Criar novo grupo"
-                            title="Criar novo grupo">+</button>
+                    {% if user.is_authenticated %}
+                        <button class="icon-button"
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#groupModal"
+                                aria-label="Criar novo grupo"
+                                title="Criar novo grupo">+</button>
+                    {% endif %}
                 </div>
                 {% if user.is_authenticated %}
                     {% if grupos %}
@@ -92,6 +96,56 @@
         </section>
     </aside>
     </div>
+    {% if user.is_authenticated %}
+        <div class="modal fade"
+             id="groupModal"
+             tabindex="-1"
+             aria-labelledby="groupModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post" action="{% url 'criar_grupo' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="grupo">
+                        <div class="modal-header">
+                            <div>
+                                <p class="eyebrow">Organização</p>
+                                <h2 class="modal-title fs-5" id="groupModalLabel">Criar novo grupo</h2>
+                            </div>
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="group-name">Nome do grupo</label>
+                                <input class="form-control"
+                                       id="group_name"
+                                       name="nome_grupo"
+                                       type="text"
+                                       maxlength="150"
+                                       required
+                                       autocomplete="off">
+                            </div>
+                            <div>
+                                <label class="form-label" for="group-description">Descrição</label>
+                                <textarea class="form-control"
+                                          id="group description"
+                                          name="descricao_grupo"
+                                          rows="4"
+                                          maxlength="500"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     {% if grupo_selecionado %}
         <dialog class="expense-modal"
                 data-expense-modal{% if despesa_form.errors %}

@@ -14,6 +14,7 @@ def home_view(request):
 
 
 def sumario_view(request):
+    print(f"Request method: {request.method} em sumario_view")
     grupos = Grupo.objects.none()
     pessoas = get_user_model().objects.none()
     grupo_selecionado = None
@@ -35,6 +36,7 @@ def sumario_view(request):
         )
 
         grupo_id = request.POST.get('grupo') if request.method == 'POST' else request.GET.get('grupo')
+        print(f"Grupo selecionado: {grupo_id}")
 
         if grupo_id and grupo_id.isdigit():
             grupo_selecionado = grupos.filter(pk=grupo_id).first()
@@ -46,6 +48,13 @@ def sumario_view(request):
                 grupo_selecionado.despesas
                 .select_related('criador', 'criador__usuario')
                 .order_by('-data_despesa', '-pk')
+            )
+            pessoas = (
+                get_user_model().objects
+                .filter(participacoes__grupo_id=grupo_selecionado.pk, participacoes__ativo=True)
+                .exclude(pk=request.user.pk)
+                .distinct()
+                .order_by('first_name', 'username')
             )
 
         if request.method == 'POST':

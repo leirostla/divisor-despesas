@@ -25,5 +25,6 @@ urlpatterns = [
     path('', include('app_divide.urls.HomeUrls')),
     path('', include('app_divide.urls.AuthUrls')),
     path('profile/', include('app_divide.urls.ProfileUrls')),
+    path('', include('app_divide.urls.GrupoUrls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

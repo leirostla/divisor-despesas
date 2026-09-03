@@ -12,3 +12,13 @@ if (expenseModal) {
     });
     if (expenseModal.hasAttribute('data-has-errors')) expenseModal.showModal();
 }
+
+const groupModal = document.getElementById('groupModal');
+
+if (groupModal) {
+    const groupForm = groupModal.querySelector('form');
+    const groupNameInput = groupModal.querySelector('[name="nome"]');
+
+    groupModal.addEventListener('shown.bs.modal', () => groupNameInput?.focus());
+    groupModal.addEventListener('hidden.bs.modal', () => groupForm?.reset());
+}
