@@ -10,7 +10,7 @@ class Despesa(models.Model):
     observacao = models.TextField(blank=True, null=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     data_despesa = models.DateField(auto_now_add=True)
-    criador = models.ForeignKey(ParticipanteGrupo, on_delete=models.CASCADE, related_name='despesas_criadas')
+    criador = models.ForeignKey(ParticipanteGrupo, on_delete=models.CASCADE, related_name='criador_despesas')
     
     
 

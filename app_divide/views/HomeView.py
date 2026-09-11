@@ -5,7 +5,9 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from app_divide.forms.despesa_form import DespesaForm
-from app_divide.models import Grupo, ParticipanteGrupo
+from app_divide.models import Grupo, ParticipanteGrupo, Pagamento
+
+from regras.divisao import calcular_divisao
 
 
 # Create your views here.
@@ -75,6 +77,11 @@ def sumario_view(request):
                 despesa.grupo = grupo_selecionado
                 despesa.criador = participante
                 despesa.save()
+                pagamento_despesa = Pagamento()
+                pagamento_despesa.valor_despesa = despesa
+                pagamento_despesa.participante_grupo_pagador = participante
+                pagamento_despesa.valor_pago = despesa.valor_total
+                pagamento_despesa.save()
                 messages.success(request, 'Despesa adicionada com sucesso.')
                 url = f"{reverse('sumario')}?grupo={grupo_selecionado.pk}"
                 return redirect(url)

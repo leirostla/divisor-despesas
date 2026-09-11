@@ -1,5 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 
+from app_divide.models.grupo import Grupo
+
 
 def calcular_divisao(pagamentos: dict[str, Decimal]):
     total = sum(pagamentos.values())
@@ -78,11 +80,11 @@ def main():
 
     pagamentos = {
         "Ana": Decimal("500.00"),
-        "Bruno": Decimal("200.00"),
-        "Carlos": Decimal("100.00"),
-        "Thiago": Decimal("500.00"),
-        "Lara": Decimal("50.00"),
-        "Licia": Decimal("10.00")
+        "Bruno": Decimal("0.00"),
+        "Carlos": Decimal("0.00"),
+        "Thiago": Decimal("0.00"),
+        "Lara": Decimal("0.00"),
+        "Licia": Decimal("0.00")
     }
 
     resultado = calcular_divisao(pagamentos)
@@ -101,6 +103,32 @@ def main():
             f"R$ {transferencia['valor']} para "
             f"{transferencia['para']}"
         )
+
+
+class Divisao:
+
+    # def __init__(self, pagamentos: dict[str, Decimal]):
+    #     self.pagamentos = pagamentos
+    #     self.resultado = calcular_divisao(pagamentos)
+
+    def __init__(self, grupo_selecionado: Grupo):
+        self.grupo = grupo_selecionado
+        self.participantes_grupo = self.grupo.participantes.filter(ativo=True)
+        self.despesas_grupo = self.grupo.despesas.all()
+        self.pagamentos = self._obter_pagamentos()
+        self.resultado = calcular_divisao(self.pagamentos)
+
+    def get_total(self):
+        return self.resultado["total"]
+
+    def get_valor_individual(self):
+        return self.resultado["valor_individual"]
+
+    def get_saldos(self):
+        return self.resultado["saldos"]
+
+    def get_transferencias(self):
+        return self.resultado["transferencias"]
 
 
 if __name__ == "__main__":

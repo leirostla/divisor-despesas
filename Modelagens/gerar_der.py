@@ -2,7 +2,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 
-OUT = Path(__file__).with_name("DER_models.png")
+OUT = Path(__file__).with_name("DER_models_atualizado_2026-09-10.png")
 W, H = 3200, 2100
 
 
@@ -34,9 +34,10 @@ entities = {
         ("PK", "id", "integer"), ("", "username", "string"),
         ("", "email", "string"), ("", "is_active", "boolean"),
     ]),
-    "GRUPO": (910, 260, 1510, 800, [
-        ("PK", "id", "integer"), ("", "nome", "varchar(100)"),
+    "GRUPO": (910, 220, 1510, 840, [
+        ("PK", "id", "integer"), ("UK", "nome", "varchar(100)"),
         ("", "descricao", "text, null"), ("", "data_criacao", "datetime"),
+        ("FK", "criado_por_id", "integer"),
     ]),
     "DESPESA": (1740, 180, 2500, 880, [
         ("PK", "id", "integer"), ("FK", "grupo_id", "integer"),
@@ -55,7 +56,7 @@ entities = {
         ("", "valor_devido", "decimal(10,2) = 0.00"),
     ]),
     "PAGAMENTO": (2240, 1110, 3120, 1850, [
-        ("PK", "id", "integer"), ("FK?", "valor_despesa_id", "integer, null"),
+        ("PK", "id", "integer"), ("FK?", "despesa_id", "integer, null"),
         ("FK?", "participante_grupo_pagador_id", "integer, null"),
         ("", "valor_pago", "decimal(10,2) = 0.00"),
     ]),
@@ -96,6 +97,7 @@ def relation(points, label, label_xy, optional=False):
 
 
 # Relações são desenhadas antes das entidades para que as caixas cubram as extremidades.
+relation([(680, 300), (910, 300)], "1 cria N grupos", (700, 252))
 relation([(1510, 610), (1740, 610)], "1 possui N", (1518, 565))
 relation([(380, 800), (380, 1160)], "1 participa em N", (405, 930))
 relation([(1210, 800), (1210, 980), (560, 980), (560, 1160)], "1 possui N", (770, 940))
@@ -108,7 +110,7 @@ relation([(560, 1800), (560, 1885), (2080, 1885), (2080, 1490), (2240, 1490)], "
 for name, data in entities.items():
     entity(name, data)
 
-d.text((82, 1930), "Legenda: PK = chave primária  •  FK = chave estrangeira  •  FK? = chave estrangeira opcional", font=FOOT, fill=MUTED)
+d.text((82, 1930), "Legenda: PK = chave primária  •  UK = valor único  •  FK = chave estrangeira  •  FK? = chave estrangeira opcional", font=FOOT, fill=MUTED)
 d.text((82, 1972), "CASCADE: Grupo, Usuário, Despesa e ParticipanteGrupo  •  SET_NULL: referências de Pagamento", font=FOOT, fill=MUTED)
 d.text((82, 2014), "Os campos id são criados implicitamente pelo Django.", font=FOOT, fill=MUTED)
 

@@ -21,9 +21,10 @@ erDiagram
 
     GRUPO {
         integer id PK
-        string nome "max_length=100"
+        string nome UK "max_length=100"
         text descricao "nullable"
         datetime data_criacao "auto_now_add"
+        integer criado_por_id FK
     }
 
     DESPESA {
@@ -53,11 +54,12 @@ erDiagram
 
     PAGAMENTO {
         integer id PK
-        integer valor_despesa_id FK "nullable"
+        integer despesa_id FK "nullable"
         integer participante_grupo_pagador_id FK "nullable"
         decimal valor_pago "10,2, default=0.00"
     }
 
+    AUTH_USER ||--o{ GRUPO : "cria [CASCADE]"
     GRUPO ||--o{ DESPESA : "possui [CASCADE]"
     GRUPO ||--o{ PARTICIPANTE_GRUPO : "possui [CASCADE]"
     AUTH_USER ||--o{ PARTICIPANTE_GRUPO : "participa como [CASCADE]"
@@ -72,6 +74,7 @@ erDiagram
 
 - `ParticipanteGrupo` materializa a associação entre um usuário e um grupo e identifica o criador de cada despesa.
 - `Despesa` não possui mais relacionamento direto com `AUTH_USER`; seu campo `criador` referencia `ParticipanteGrupo`.
+- `Grupo` possui um nome único e referencia diretamente o usuário que o criou por meio de `criado_por`.
 - `ParticipacaoDespesa` materializa a divisão de uma despesa entre os participantes, registrando o valor devido por cada um.
 - `Pagamento` referencia opcionalmente uma despesa e o participante pagador; se um deles for excluído, a respectiva chave estrangeira passa a `NULL`.
 - As demais chaves estrangeiras usam exclusão em cascata.
@@ -79,5 +82,5 @@ erDiagram
 ## Observações
 
 - `AUTH_USER` corresponde à model configurada em `settings.AUTH_USER_MODEL`. Na configuração atual, é a model padrão `django.contrib.auth.models.User` (tabela `auth_user`).
-- As models não declaram restrições `UniqueConstraint`. Assim, no estado atual, o banco permite repetir a associação usuário/grupo e a associação participante/despesa.
+- `Grupo.nome` possui restrição de unicidade. As associações usuário/grupo e participante/despesa continuam sem restrições `UniqueConstraint` e podem se repetir.
 - Os nomes físicos padrão das tabelas são `app_divide_grupo`, `app_divide_despesa`, `app_divide_participantegrupo`, `app_divide_participacaodespesa` e `app_divide_pagamento`.
