@@ -36,8 +36,12 @@
                                 </li>
                             {% endfor %}
                         </ul>
-                {% else %}<p class="empty-state">Você ainda não participa de nenhum grupo.</p>{% endif %}
-{% else %}<p class="empty-state">Entre na sua conta para visualizar seus grupos.</p>{% endif %}
+                    {% else %}
+                        <p class="empty-state">Você ainda não participa de nenhum grupo.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-state">Entre na sua conta para visualizar seus grupos.</p>
+                {% endif %}
     </section>
     <section class="sidebar-section" aria-labelledby="people-title">
         <div class="section-heading">
@@ -56,8 +60,11 @@
                     </li>
                 {% endfor %}
             </ul>
-        {% elif user.is_authenticated %}<p class="empty-state">Nenhuma outra pessoa encontrada nos seus grupos.</p>
-{% else %}<p class="empty-state">As pessoas dos seus grupos aparecerão aqui.</p>{% endif %}
+        {% elif user.is_authenticated %}
+            <p class="empty-state">Nenhuma outra pessoa encontrada nos seus grupos.</p>
+        {% else %}
+            <p class="empty-state">As pessoas dos seus grupos aparecerão aqui.</p>
+        {% endif %}
     </section>
     </aside>
     <main class="expense-column">
@@ -93,6 +100,13 @@
     <aside class="summary-aside" aria-label="Área ainda não definida">
         <section class="content-card undefined-card">
             <p>a definir</p>
+            {% if grupo_selecionado %}
+                {% if pagamentos %}
+                    {% for pessoa, saldo in pagamentos.items %}
+                        <p>{{ pessoa }}: R$ {{ saldo|floatformat:2 }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
         </section>
     </aside>
     </div>

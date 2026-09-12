@@ -5,7 +5,7 @@ from .participante_grupo import ParticipanteGrupo
 from django.conf import settings
 
 class Despesa(models.Model):
-    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, related_name='despesas')
+    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, related_name='grupo_despesa')
     descricao = models.CharField(max_length=255)
     observacao = models.TextField(blank=True, null=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)

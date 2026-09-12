@@ -7,7 +7,8 @@ from django.urls import reverse
 from app_divide.forms.despesa_form import DespesaForm
 from app_divide.models import Grupo, ParticipanteGrupo, Pagamento
 
-from regras.divisao import calcular_divisao
+from app_divide.models.participacao_despesa import ParticipacaoDespesa
+from app_divide.service.divisao import Divisao, calcular_divisao
 
 
 # Create your views here.
@@ -47,7 +48,7 @@ def sumario_view(request):
 
         if grupo_selecionado is not None:
             despesas = (
-                grupo_selecionado.despesas
+                grupo_selecionado.grupo_despesa
                 .select_related('criador', 'criador__usuario')
                 .order_by('-data_despesa', '-pk')
             )
@@ -58,7 +59,7 @@ def sumario_view(request):
                 .distinct()
                 .order_by('first_name', 'username')
             )
-
+                        
         if request.method == 'POST':
             despesa_form = DespesaForm(request.POST)
             participante = None
@@ -77,11 +78,34 @@ def sumario_view(request):
                 despesa.grupo = grupo_selecionado
                 despesa.criador = participante
                 despesa.save()
+
+                valor_devido = despesa.valor_total / (len(pessoas) + 1)
+
+                participacao_despesa = ParticipacaoDespesa()
+                participacao_despesa.despesa = despesa
+                participacao_despesa.participante = participante
+                participacao_despesa.valor_devido = valor_devido
+                participacao_despesa.save()
+
+                for p in pessoas:
+                    participacao_despesa = ParticipacaoDespesa()
+                    participacao_despesa.despesa = despesa
+                    participacao_despesa.participante = ParticipanteGrupo.objects.filter(
+                        grupo=grupo_selecionado,
+                        usuario=p,
+                        ativo=True,
+                    ).first()
+                    participacao_despesa.valor_devido = valor_devido
+                    participacao_despesa.save()
+
                 pagamento_despesa = Pagamento()
-                pagamento_despesa.valor_despesa = despesa
-                pagamento_despesa.participante_grupo_pagador = participante
+                pagamento_despesa.despesa = despesa
+                pagamento_despesa.pagador = participante
                 pagamento_despesa.valor_pago = despesa.valor_total
                 pagamento_despesa.save()
+
+                #divisao = Divisao(grupo_selecionado)
+
                 messages.success(request, 'Despesa adicionada com sucesso.')
                 url = f"{reverse('sumario')}?grupo={grupo_selecionado.pk}"
                 return redirect(url)
@@ -92,6 +116,7 @@ def sumario_view(request):
         'grupo_selecionado': grupo_selecionado,
         'despesas': despesas,
         'despesa_form': despesa_form,
+        'pagamentos': Divisao(grupo_selecionado).get_pagamentos() if grupo_selecionado else {},
     }
     return render(request, template_name='home/sumario.html', context=context, status=200)
 
