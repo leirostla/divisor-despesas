@@ -22,3 +22,13 @@ if (groupModal) {
     groupModal.addEventListener('shown.bs.modal', () => groupNameInput?.focus());
     groupModal.addEventListener('hidden.bs.modal', () => groupForm?.reset());
 }
+
+const paymentModal = document.getElementById('paymentModal');
+
+if (paymentModal) {
+    const paymentForm = paymentModal.querySelector('[data-payment-form]');
+    const expenseSelect = paymentModal.querySelector('[name="despesa"]');
+
+    paymentModal.addEventListener('shown.bs.modal', () => expenseSelect?.focus());
+    paymentModal.addEventListener('hidden.bs.modal', () => paymentForm?.reset());
+}

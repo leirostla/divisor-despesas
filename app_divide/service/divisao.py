@@ -2,8 +2,10 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from django.db.models import QuerySet
 
+from app_divide.models.despesa import Despesa
 from app_divide.models.grupo import Grupo
 from app_divide.models.participacao_despesa import ParticipacaoDespesa
+from app_divide.models.participante_grupo import ParticipanteGrupo
 
 
 
@@ -146,6 +148,53 @@ class Divisao:
 
     def get_transferencias(self):
         return self.resultado["transferencias"]
+
+
+class CalcularPartesDespesa:
+
+    def calcular_partes_despesa(self, despesa: Despesa, grupo_selecionado: Grupo, pagador: ParticipanteGrupo, pessoas: list):
+        # Calcular o valor devido por cada participante
+        valor_devido = despesa.valor_total / (len(pessoas) + 1)
+
+        participantes_despesa = list(pessoas)
+        participantes_despesa.append(pagador.usuario)
+
+        # Distribuir centavos de forma equitativa
+        cotas = self.distribuir_centavos(despesa.valor_total, len(participantes_despesa))
+
+        # Criar ParticipacaoDespesa para cada participante
+        for pessoa, cota in zip(participantes_despesa, cotas):
+
+            participante_grupo = ParticipanteGrupo.objects.get(
+                grupo=grupo_selecionado,
+                usuario=pessoa,
+                ativo=True,
+            )
+
+            ParticipacaoDespesa.objects.create(
+                despesa=despesa,
+                participante=participante_grupo,
+                valor_devido=cota,
+            )
+
+            # Atualizar o valor pago pelo criador da despesa
+            despesa.despesa_paga.create(
+                pagador=pagador,
+                valor_pago=despesa.valor_total,
+            )            
+
+
+    def distribuir_centavos(self, valor: Decimal, quantidade: int) -> list[Decimal]:
+        total_centavos = int(valor * 100)
+        cota_base, centavos_restantes = divmod(total_centavos, quantidade)
+
+        cotas_centavos = [
+            cota_base + (1 if indice < centavos_restantes else 0)
+            for indice in range(quantidade)
+        ]
+
+        cotas = [Decimal(centavos) / 100 for centavos in cotas_centavos]
+        return cotas
 
 
 if __name__ == "__main__":

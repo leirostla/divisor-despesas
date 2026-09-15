@@ -7,6 +7,7 @@
 .eyebrow { margin: 0 0 .15rem; color: var(--color-primary); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .section-heading h2 { margin: 0; font-size: 1rem; }
 .expense-heading h1 { margin: 0; font-size: 1.5rem; }
+.expense-actions { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
 .button-secondary { background: #fff; border-color: var(--color-border); }
 .icon-button { width: 2rem; height: 2rem; display: grid; place-items: center; padding: 0; color: var(--color-primary); background: #eff6ff; border: 0; border-radius: .5rem; cursor: pointer; font-size: 1.25rem; }
 .count-badge { min-width: 1.65rem; padding: .15rem .45rem; color: var(--color-primary); background: #eff6ff; border-radius: 999px; font-size: .75rem; font-weight: 700; text-align: center; }
@@ -55,4 +56,5 @@ a.sidebar-item.is-active { color: var(--color-primary); }
     .expense-item { grid-template-columns: 2.75rem minmax(0,1fr); }
     .expense-value { grid-column: 2; }
     .expense-heading { align-items: flex-start; }
+    .expense-actions { justify-content: flex-start; }
 }
