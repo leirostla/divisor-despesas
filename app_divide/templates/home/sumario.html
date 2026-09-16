@@ -42,66 +42,69 @@
                 {% else %}
                     <p class="empty-state">Entre na sua conta para visualizar seus grupos.</p>
                 {% endif %}
-    </section>
-    <section class="sidebar-section" aria-labelledby="people-title">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">Em comum</p>
-                <h2 id="people-title">Pessoas</h2>
-            </div>
-            {% if user.is_authenticated %}<span class="count-badge">{{ pessoas|length }}</span>{% endif %}
-        </div>
-        {% if pessoas %}
-            <ul class="sidebar-list">
-                {% for pessoa in pessoas %}
-                    <li class="sidebar-item">
-                        <span class="item-avatar" aria-hidden="true">{{ pessoa.get_full_name|default:pessoa.username|first|upper }}</span>
-                        <span class="item-content"><strong>{{ pessoa.get_full_name|default:pessoa.username }}</strong><small>@{{ pessoa.username }}</small></span>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% elif user.is_authenticated %}
-            <p class="empty-state">Nenhuma outra pessoa encontrada nos seus grupos.</p>
-        {% else %}
-            <p class="empty-state">As pessoas dos seus grupos aparecerão aqui.</p>
-        {% endif %}
-    </section>
-    </aside>
-    <main class="expense-column">
-        <section class="content-card">
-            <div class="expense-heading">
-                <div>
-                    <p class="eyebrow">Despesas</p>
-                    <h1>{% if grupo_selecionado %}{{ grupo_selecionado.nome }}{% else %}Selecione um grupo{% endif %}</h1>
-                </div>
-                {% if grupo_selecionado %}
-                    <div class="expense-actions">
-                        <button class="button button-primary button-small"
-                                type="button"
-                                data-open-expense-modal>+ Adicionar despesa</button>
-                        <button class="button button-secondary button-small"
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#paymentModal">Registrar pagamento</button>
+            </section>
+            <section class="sidebar-section" aria-labelledby="people-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Em comum</p>
+                        <h2 id="people-title">Pessoas</h2>
                     </div>
+                    {% if user.is_authenticated %}<span class="count-badge">{{ pessoas|length }}</span>{% endif %}
+                </div>
+                {% if pessoas %}
+                    <ul class="sidebar-list">
+                        {% for pessoa in pessoas %}
+                            <li class="sidebar-item">
+                                <span class="item-avatar" aria-hidden="true">{{ pessoa.get_full_name|default:pessoa.username|first|upper }}</span>
+                                <span class="item-content"><strong>{{ pessoa.get_full_name|default:pessoa.username }}</strong><small>@{{ pessoa.username }}</small></span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% elif user.is_authenticated %}
+                    <p class="empty-state">Nenhuma outra pessoa encontrada nos seus grupos.</p>
+                {% else %}
+                    <p class="empty-state">As pessoas dos seus grupos aparecerão aqui.</p>
                 {% endif %}
-            </div>
-            {% if despesas %}
-                <ul class="expense-list">
-                    {% for despesa in despesas %}
-                        <li class="expense-item">
-                            <div class="expense-date"><strong>{{ despesa.data_despesa|date:"d" }}</strong><span>{{ despesa.data_despesa|date:"M" }}</span></div>
-                            <div class="expense-info">
-                                <strong>{{ despesa.descricao }}</strong>
-                                <small>Criada por {{ despesa.criador.nome|default:despesa.criador.usuario.first_name|default:despesa.criador.usuario.username }}</small>
-                            </div>
-                            <strong class="expense-value">R$ {{ despesa.valor_total|floatformat:2 }}</strong>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% elif grupo_selecionado %}<p class="empty-state expense-empty">Este grupo ainda não possui despesas.</p>
-{% else %}<p class="empty-state expense-empty">Suas despesas aparecerão após você selecionar um grupo.</p>{% endif %}
-    </section>
+            </section>
+        </aside>
+        <main class="expense-column">
+            <section class="content-card">
+                <div class="expense-heading">
+                    <div>
+                        <p class="eyebrow">Despesas</p>
+                        <h1>{% if grupo_selecionado %}{{ grupo_selecionado.nome }}{% else %}Selecione um grupo{% endif %}</h1>
+                    </div>
+                    {% if grupo_selecionado %}
+                        <div class="expense-actions">
+                            <button class="button button-primary button-small"
+                                    type="button"
+                                    data-open-expense-modal>+ Adicionar despesa</button>
+                            <button class="button button-secondary button-small"
+                                    type="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#paymentModal">Registrar pagamento</button>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if despesas %}
+                    <ul class="expense-list">
+                        {% for despesa in despesas %}
+                            <li class="expense-item">
+                                <div class="expense-date"><strong>{{ despesa.data_despesa|date:"d" }}</strong><span>{{ despesa.data_despesa|date:"M" }}</span></div>
+                                <div class="expense-info">
+                                    <strong>{{ despesa.descricao }}</strong>
+                                    <small>Criada por {{ despesa.criador.nome|default:despesa.criador.usuario.first_name|default:despesa.criador.usuario.username }}</small>
+                                </div>
+                                <strong class="expense-value">R$ {{ despesa.valor_total|floatformat:2 }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% elif grupo_selecionado %}
+                    <p class="empty-state expense-empty">Este grupo ainda não possui despesas.</p>
+                {% else %}
+                    <p class="empty-state expense-empty">Suas despesas aparecerão após você selecionar um grupo.</p>
+                {% endif %}
+            </section>
     </main>
     <aside class="summary-aside" aria-label="Área ainda não definida">
         <section class="content-card undefined-card">
@@ -158,7 +161,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Salvar</button>
                         </div>
                     </form>
@@ -174,6 +179,7 @@
              aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
+                    <!-- Modal registro de pagamento content -->
                     <form method="post" action="{% url 'sumario' %}" data-payment-form>
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="pagamento">
@@ -226,8 +232,12 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar pagamento</button>
-                            <button type="submit" class="btn btn-primary"{% if not despesas %} disabled{% endif %}>Registrar quitação</button>
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Cancelar pagamento</button>
+                            <button type="submit"
+                                    class="btn btn-primary"
+                                    {% if not despesas %} disabled{% endif %}>Registrar quitação</button>
                         </div>
                     </form>
                 </div>

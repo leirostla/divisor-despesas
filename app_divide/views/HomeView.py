@@ -94,6 +94,10 @@ def sumario_view(request):
                 url = f"{reverse('sumario')}?grupo={grupo_selecionado.pk}"
                 return redirect(url)
 
+    pagamento_form = PagamentoForm(grupo=grupo_selecionado)
+
+    print(f"pagamento_form: {pagamento_form}")
+
     context = {
         'grupos': grupos,
         'pessoas': pessoas,

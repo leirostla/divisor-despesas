@@ -129,7 +129,6 @@ class Divisao:
             self.pagamentos[participante] = self.pagamentos.get(participante, Decimal("0.00")) - valor_devido
 
 
-        print(f"Pagamentos: {self.pagamentos}")
 
 
 
