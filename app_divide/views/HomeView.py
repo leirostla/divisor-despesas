@@ -11,7 +11,9 @@ from app_divide.forms.pagamento_form import PagamentoForm
 from app_divide.models import Grupo, ParticipanteGrupo, Pagamento
 
 from app_divide.models.participacao_despesa import ParticipacaoDespesa
-from app_divide.service.divisao import CalcularPartesDespesa, Divisao
+from app_divide.service.gerenciar_sumario import GerenciarSumario
+from app_divide.service.services import distribuir_centavos
+
 
 
 # Create your views here.
@@ -26,7 +28,9 @@ def sumario_view(request):
     grupo_selecionado = None
     despesas = []
     despesa_form = DespesaForm()
-    pagamento_form = PagamentoForm()
+    pagamento_form = None
+    calculos_participacao = None
+    gerenciar_sumario = None
 
     if request.user.is_authenticated:
         grupos = (Grupo.objects.annotate(participantes_ativos=Count('participantes', filter=Q(participantes__ativo=True), distinct=True,))
@@ -51,6 +55,9 @@ def sumario_view(request):
             grupo_selecionado = grupos.first()
 
         if grupo_selecionado is not None:
+
+            gerenciar_sumario = GerenciarSumario(grupo_selecionado)
+
             despesas = (
                 grupo_selecionado.grupo_despesa
                 .select_related('criador', 'criador__usuario')
@@ -62,41 +69,12 @@ def sumario_view(request):
                 .exclude(pk=request.user.pk)
                 .distinct()
                 .order_by('first_name', 'username')
-            )
-                        
-        if request.method == 'POST':
-            despesa_form = DespesaForm(request.POST)
-            participante = None
-            if grupo_selecionado is not None:
-                participante = ParticipanteGrupo.objects.filter(
-                    grupo=grupo_selecionado,
-                    usuario=request.user,
-                    ativo=True,
-                ).first()
+            )                        
+        
 
-            if participante is None:
-                messages.error(
-                    request, 'Você não pode adicionar despesas a este grupo.')
-            elif despesa_form.is_valid():
-                try:
-                    with transaction.atomic():
+    pagamento_form = PagamentoForm(grupo=grupo_selecionado) if grupo_selecionado else None
 
-                        despesa = despesa_form.save(commit=False)
-                        despesa.grupo = grupo_selecionado
-                        despesa.criador = participante
-                        despesa.save()
-                        CalcularPartesDespesa().calcular_partes_despesa(despesa, grupo_selecionado, participante, pessoas)
-
-                except IntegrityError as ie:
-                    messages.error(request, f'Erro ao adicionar a despesa:{ie}')
-                
-                messages.success(request, 'Despesa adicionada com sucesso.')
-                url = f"{reverse('sumario')}?grupo={grupo_selecionado.pk}"
-                return redirect(url)
-
-    pagamento_form = PagamentoForm(grupo=grupo_selecionado)
-
-    print(f"pagamento_form: {pagamento_form}")
+    #print(f"pagamento_form: {pagamento_form}")
 
     context = {
         'grupos': grupos,
@@ -104,7 +82,7 @@ def sumario_view(request):
         'grupo_selecionado': grupo_selecionado,
         'despesas': despesas,
         'despesa_form': despesa_form,
-        'participantes_despesa': Divisao(grupo_selecionado).get_pagamentos() if grupo_selecionado else {},
+        'valores_individuais': gerenciar_sumario.calcular_valores_individuais() if gerenciar_sumario is not None else {},
         'pagamento_form': pagamento_form,
     }
     return render(request, template_name='home/sumario.html', context=context, status=200)
@@ -116,3 +94,97 @@ def consultas_view(request):
     print(participante_grupo)    
 
     return render(request, template_name='home/consultas.html')
+
+
+
+def registrar_pagamento_view(request):
+    print(f"Request method: {request.method} em registrar_pagamento_view")
+    
+    if request.method == 'POST':
+        grupo_id = request.POST.get('grupo')
+        grupo_selecionado = Grupo.objects.get(pk=grupo_id) if grupo_id else None
+        pagamento_form = PagamentoForm(request.POST, grupo=grupo_selecionado)
+
+        if pagamento_form.is_valid():
+            try:
+                with transaction.atomic():
+                    pagamento = pagamento_form.save()
+                    messages.success(request, 'Pagamento registrado com sucesso.')
+            except IntegrityError as ie:
+                messages.error(request, f'Erro ao registrar o pagamento: {ie}')
+        else:
+            messages.error(request, 'Erro no formulário de pagamento. Verifique os campos e tente novamente.')
+
+    url = f"{reverse('sumario')}?grupo={grupo_selecionado.pk}" if grupo_selecionado else reverse('sumario')
+    return redirect(url)
+
+
+
+
+def registrar_despesa_view(request):
+
+    print(f"Request method: {request.method} em registrar_despesa_view")
+
+    grupo_id = request.POST.get('grupo') if request.method == 'POST' else request.GET.get('grupo')
+
+    if request.user.is_authenticated and request.method == 'POST':
+        grupo_selecionado = Grupo.objects.get(pk=grupo_id) if grupo_id else None
+        
+        participante_grupo_logado = None
+
+        if grupo_selecionado is not None:
+            despesa_form = DespesaForm(request.POST)
+
+            participante_grupo_logado = ParticipanteGrupo.objects.filter(
+                        grupo=grupo_selecionado,
+                        usuario=request.user,
+                        ativo=True,
+                    ).first()
+
+            
+    
+            if participante_grupo_logado is None:
+                messages.error(
+                        request, 'Você não pode adicionar despesas a este grupo.')
+            elif despesa_form.is_valid():
+                try:
+                    with transaction.atomic():
+    
+                        despesa = despesa_form.save(commit=False)
+                        despesa.grupo = grupo_selecionado
+                        despesa.criador = participante_grupo_logado
+                        despesa.save()
+                        
+                        #Atualizar o registro pagamento relacionado a despesa
+                        despesa.despesa_paga.create(
+                                pagador=participante_grupo_logado,
+                                valor_pago=despesa.valor_total,
+                            )
+
+                        participantes_grupo = ParticipanteGrupo.objects.filter(
+                                                grupo=grupo_selecionado,
+                                                ativo=True,
+                                            )
+
+                        cotas = distribuir_centavos(despesa.valor_total, len(participantes_grupo))
+
+                        # Registrar a participação nas despesas
+                        for participante_grupo, cota in zip(participantes_grupo, cotas):
+                            ParticipacaoDespesa.objects.create(
+                                despesa=despesa,
+                                participante=participante_grupo,
+                                valor_devido=cota,
+                            )
+                        
+                        # calculos_participacao = GerenciarDespesas(despesa, grupo_selecionado, participante_grupo_logado, pessoas)
+                        # calculos_participacao.gerar_participacao_despesa()
+    
+                except IntegrityError as ie:
+                    messages.error(request, f'Erro ao adicionar a despesa:{ie}')
+                    
+                messages.success(request, 'Despesa adicionada com sucesso.')
+                url = f"{reverse('sumario')}?grupo={grupo_selecionado.pk}"
+                return redirect(url)
+            
+    return redirect('sumario')
+    

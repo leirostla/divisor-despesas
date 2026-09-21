@@ -12,25 +12,31 @@ class PagamentoForm(forms.ModelForm):
             'pagador': 'Pagador',
             'valor_pago': 'Valor Pago',
         }
-        # widgets = {
-        #     'despesa': forms.Select(attrs={
-        #         'class': 'form-control',
-        #     }),
-        #     'pagador': forms.Select(attrs={
-        #         'class': 'form-control',
-        #     }),
-        #     'valor_pago': forms.NumberInput(attrs={
-        #         'placeholder': '0,00',
-        #         'min': '0.01',
-        #         'step': '0.01',
-        #         'class': 'form-control',
-        #     }),
-        # }
+        widgets = {
+            'despesa': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'pagador': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'valor_pago': forms.NumberInput(attrs={
+                'placeholder': '0,00',
+                'min': '0.01',
+                'step': '0.01',
+                'class': 'form-control',
+                'required': True,
+            }),
+        }
 
     def __init__(self, *args, grupo=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields['pagador'].label_from_instance = self.nome_pagador
+        self.fields['pagador'].empty_label = "Selecione um pagador"
+        
+        self.fields["despesa"].empty_label = (
+            "Selecione uma despesa"
+        )
 
         if grupo is None:
             self.fields['despesa'].queryset = Despesa.objects.none()

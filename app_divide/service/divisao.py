@@ -1,21 +1,34 @@
 from decimal import Decimal, ROUND_HALF_UP
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Sum
 
 from app_divide.models.despesa import Despesa
 from app_divide.models.grupo import Grupo
+from app_divide.models.pagamento import Pagamento
 from app_divide.models.participacao_despesa import ParticipacaoDespesa
 from app_divide.models.participante_grupo import ParticipanteGrupo
 
+from app_divide.service.calculo_cotas import CalcularDivisao
 
 
 def calcular_divisao(pagamentos: dict[str, Decimal]):
     total = sum(pagamentos.values())
     quantidade = len(pagamentos)
 
+    if quantidade == 0:
+        return {
+            "total": total,
+            "valor_individual": Decimal("0.00"),
+            "saldos": {},
+            "transferencias": [],
+        }
+
     valor_individual = (
-        total / Decimal(quantidade)
-    ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        (total / Decimal(quantidade)).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP,
+        )
+    )
 
     saldos = {
         pessoa: (valor_pago - valor_individual).quantize(
@@ -41,7 +54,6 @@ def calcular_divisao(pagamentos: dict[str, Decimal]):
     devedores.sort(key=lambda item: item[1], reverse=True)
 
     transferencias = []
-
     indice_credor = 0
     indice_devedor = 0
 
@@ -83,7 +95,6 @@ def calcular_divisao(pagamentos: dict[str, Decimal]):
 
 
 def main():
-
     pagamentos = {
         "Ana": Decimal("130.00"),
         "Bruno": Decimal("0.00"),
@@ -108,92 +119,58 @@ def main():
         )
 
 
-class Divisao:
+class Rateio:
 
     def __init__(self, grupo_selecionado: Grupo):
         self.grupo = grupo_selecionado
-
-        despesas = self.grupo.grupo_despesa.all()
-
         self.pagamentos = {}
-        for despesa in despesas:
-            valor_total = despesa.valor_total
-            pagador = despesa.despesa_paga.first().pagador.usuario.username if despesa.despesa_paga.exists() else 'Nulo'
-            self.pagamentos[pagador] = self.pagamentos.get(pagador, Decimal("0.00")) + valor_total
-
-        participantes_despesa = ParticipacaoDespesa.objects.filter(despesa__in=despesas).select_related('participante', 'participante__usuario')
-
-        for participantes in participantes_despesa:
-            participante = participantes.participante.usuario.username
-            valor_devido = participantes.valor_devido
-            self.pagamentos[participante] = self.pagamentos.get(participante, Decimal("0.00")) - valor_devido
-
-
-
-
+        self.resultado = {}
 
     def get_pagamentos(self):
+        despesas = self.grupo.grupo_despesa.all()
+        self.pagamentos = {}
+
+        for despesa in despesas:
+            valor_total = despesa.valor_total
+            pagamentos_model = despesa.despesa_paga.all()
+
+            for pagamento_model in pagamentos_model:
+                participante_username = pagamento_model.pagador.usuario.username
+                self.pagamentos[participante_username] = (self.pagamentos.get(participante_username, Decimal("0.00"))
+                    + valor_total
+                )
+
+            participantes_despesa = ParticipacaoDespesa.objects.filter(
+                despesa=despesa,
+            ).select_related("participante", "participante__usuario")
+
+            for participante_despesa in participantes_despesa:
+                participante = participante_despesa.participante.usuario.username
+                valor_devido = participante_despesa.valor_devido
+                self.pagamentos[participante] = (
+                    self.pagamentos.get(participante, Decimal("0.00"))
+                    - valor_devido
+                )
+
+        self.resultado = calcular_divisao(self.pagamentos)
+        print(f"Pagamentos: {self.pagamentos}")
         return self.pagamentos
-        
 
     def get_total(self):
-        return self.resultado["total"]
+        return self.resultado.get("total")
 
     def get_valor_individual(self):
-        return self.resultado["valor_individual"]
+        return self.resultado.get("valor_individual")
 
     def get_saldos(self):
-        return self.resultado["saldos"]
+        return self.resultado.get("saldos")
 
     def get_transferencias(self):
-        return self.resultado["transferencias"]
+        return self.resultado.get("transferencias")
 
 
-class CalcularPartesDespesa:
 
-    def calcular_partes_despesa(self, despesa: Despesa, grupo_selecionado: Grupo, pagador: ParticipanteGrupo, pessoas: list):
-        # Calcular o valor devido por cada participante
-        valor_devido = despesa.valor_total / (len(pessoas) + 1)
-
-        participantes_despesa = list(pessoas)
-        participantes_despesa.append(pagador.usuario)
-
-        # Distribuir centavos de forma equitativa
-        cotas = self.distribuir_centavos(despesa.valor_total, len(participantes_despesa))
-
-        # Criar ParticipacaoDespesa para cada participante
-        for pessoa, cota in zip(participantes_despesa, cotas):
-
-            participante_grupo = ParticipanteGrupo.objects.get(
-                grupo=grupo_selecionado,
-                usuario=pessoa,
-                ativo=True,
-            )
-
-            ParticipacaoDespesa.objects.create(
-                despesa=despesa,
-                participante=participante_grupo,
-                valor_devido=cota,
-            )
-
-            # Atualizar o valor pago pelo criador da despesa
-            despesa.despesa_paga.create(
-                pagador=pagador,
-                valor_pago=despesa.valor_total,
-            )            
-
-
-    def distribuir_centavos(self, valor: Decimal, quantidade: int) -> list[Decimal]:
-        total_centavos = int(valor * 100)
-        cota_base, centavos_restantes = divmod(total_centavos, quantidade)
-
-        cotas_centavos = [
-            cota_base + (1 if indice < centavos_restantes else 0)
-            for indice in range(quantidade)
-        ]
-
-        cotas = [Decimal(centavos) / 100 for centavos in cotas_centavos]
-        return cotas
+        
 
 
 if __name__ == "__main__":

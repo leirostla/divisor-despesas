@@ -82,7 +82,7 @@
                             <button class="button button-secondary button-small"
                                     type="button"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#paymentModal">Registrar pagamento</button>
+                                    data-bs-target="#paymentModal">Adicionar Quitação</button>
                         </div>
                     {% endif %}
                 </div>
@@ -105,19 +105,19 @@
                     <p class="empty-state expense-empty">Suas despesas aparecerão após você selecionar um grupo.</p>
                 {% endif %}
             </section>
-    </main>
-    <aside class="summary-aside" aria-label="Área ainda não definida">
-        <section class="content-card undefined-card">
-            <p>a definir</p>
-            {% if grupo_selecionado %}
-                {% if participantes_despesa %}
-                    {% for pessoa, saldo in participantes_despesa.items %}
-                        <p>{{ pessoa }}: R$ {{ saldo|floatformat:2 }}</p>
-                    {% endfor %}
+        </main>
+        <aside class="summary-aside" aria-label="Área ainda não definida">
+            <section class="content-card undefined-card">
+                <p>a definir</p>
+                {% if grupo_selecionado %}
+                    {% if valores_individuais %}
+                        {% for pessoa, saldo in valores_individuais.items %}
+                            <p>{{ pessoa }}: R$ {{ saldo|floatformat:2 }}</p>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        </section>
-    </aside>
+            </section>
+        </aside>
     </div>
     {% if user.is_authenticated %}
         <div class="modal fade"
@@ -180,7 +180,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <!-- Modal registro de pagamento content -->
-                    <form method="post" action="{% url 'sumario' %}" data-payment-form>
+                    <form method="post" action="{% url 'pagamentos' %}" data-payment-form>
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="pagamento">
                         <input type="hidden" name="grupo" value="{{ grupo_selecionado.pk }}">
@@ -195,8 +195,11 @@
                                     aria-label="Fechar"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label" for="payment-expense">Despesa</label>
+                            {% if pagamento_form %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="payment-expense">{{ pagamento_form.despesa.label }}</label>
+                                    {{ pagamento_form.despesa }}
+                                    <!--
                                 <select class="form-select" id="payment-expense" name="despesa" required>
                                     <option value="" selected disabled>Selecione uma despesa</option>
                                     {% for despesa in despesas %}
@@ -205,31 +208,36 @@
                                         <option value="" disabled>Nenhuma despesa disponível</option>
                                     {% endfor %}
                                 </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="payment-payer">Pagador</label>
-                                <select class="form-select" id="payment-payer" name="pagador" required>
-                                    <option value="" selected disabled>Selecione quem realizou o pagamento</option>
-                                    <option value="{{ user.pk }}">{{ user.get_full_name|default:user.username }}</option>
-                                    {% for pessoa in pessoas %}
-                                        <option value="{{ pessoa.pk }}">{{ pessoa.get_full_name|default:pessoa.username }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label" for="payment-amount">Valor pago</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">R$</span>
-                                    <input class="form-control"
-                                           id="payment-amount"
-                                           name="valor_pago"
-                                           type="number"
-                                           min="0.01"
-                                           step="0.01"
-                                           inputmode="decimal"
-                                           required>
+                                -->
                                 </div>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="payment-payer">{{ pagamento_form.pagador.label }}</label>
+                                    {{ pagamento_form.pagador }}
+
+                                    <!--select class="form-select" id="payment-payer" name="pagador" required>
+                                        <option value="" selected disabled>Selecione quem realizou o pagamento</option>
+                                        <option value="{{ user.pk }}">{{ user.get_full_name|default:user.username }}</option>
+                                        {% for pessoa in pessoas %}
+                                            <option value="{{ pessoa.pk }}">{{ pessoa.get_full_name|default:pessoa.username }}</option>
+                                        {% endfor %}
+                                    </select-->
+                                </div>
+                                <div>
+                                    <label class="form-label" for="payment-amount">{{ pagamento_form.valor_pago.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        {{ pagamento_form.valor_pago }}
+                                        <!--input class="form-control"
+                                               id="payment-amount"
+                                               name="valor_pago"
+                                               type="number"
+                                               min="0.01"
+                                               step="0.01"
+                                               inputmode="decimal"
+                                               required-->
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="modal-footer">
                             <button type="button"
@@ -258,7 +266,7 @@
                         data-close-expense-modal
                         aria-label="Fechar modal">&times;</button>
             </div>
-            <form method="post" action="{% url 'sumario' %}" novalidate>
+            <form method="post" action="{% url 'registrar_despesa' %}" novalidate>
                 {% csrf_token %}
                 <input type="hidden" name="grupo" value="{{ grupo_selecionado.pk }}">
                 {% if despesa_form.non_field_errors %}
