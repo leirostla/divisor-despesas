@@ -39,7 +39,7 @@ class GerenciarSumario:
         if total_valor_dividas:
 
             q_participantes_despesa = ParticipacaoDespesa.objects.filter(
-                participante__grupo__id=self.grupo_selecionado.id)
+                participante__grupo__id=self.grupo_selecionado.id).order_by('participante__usuario__username')
 
             q_pagamentos = Pagamento.objects.filter(pagador__grupo__id=self.grupo_selecionado.id)
 

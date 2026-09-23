@@ -8,3 +8,4 @@ from .despesa import Despesa
 from .pagamento import Pagamento
 from .participacao_despesa import ParticipacaoDespesa
 from .participante_grupo import ParticipanteGrupo
+from .amizades import Amizade

@@ -5,7 +5,7 @@ class CalcularDivisao:
 
     def __init__(self, pagamentos: dict[str, Decimal], divida: Decimal):
 
-        self.pagamentos = pagamentos
+        self.pagamentos = dict(sorted(pagamentos.items()))
         self.divida = divida
         self.valor_individual = self.divida / len(self.pagamentos) if self.pagamentos else Decimal("0.00")        
         self.cotas_quantidade = len(self.pagamentos)

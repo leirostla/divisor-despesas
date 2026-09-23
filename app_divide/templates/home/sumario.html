@@ -106,15 +106,70 @@
                 {% endif %}
             </section>
         </main>
-        <aside class="summary-aside" aria-label="Área ainda não definida">
-            <section class="content-card undefined-card">
-                <p>a definir</p>
+        <aside class="summary-aside" aria-label="Amigos e saldos">
+            <section class="content-card friends-card" aria-labelledby="friends-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Sua rede</p>
+                        <h2 id="friends-title">Meus amigos</h2>
+                    </div>
+                    {% if user.is_authenticated %}<span class="count-badge">{{ amigos|length }}</span>{% endif %}
+                </div>
+                {% if amigos %}
+                    <ul class="friends-list">
+                        {% for amigo in amigos %}
+                            <li class="friend-item">
+                                <span class="item-avatar" aria-hidden="true">{{ amigo.get_full_name|default:amigo.username|first|upper }}</span>
+                                <span class="item-content">
+                                    <strong>{{ amigo.get_full_name|default:amigo.username }}</strong>
+                                    <small>@{{ amigo.username }}</small>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% elif user.is_authenticated %}
+                    <p class="empty-state friends-empty">Você ainda não adicionou amigos.</p>
+                {% else %}
+                    <p class="empty-state friends-empty">Entre na sua conta para visualizar seus amigos.</p>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <form class="invite-form" method="post" action="{% url 'sumario' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="convite">
+                        <label class="invite-label" for="friend-email">Convidar amigos</label>
+                        {% if convite_form %}
+                            <div class="invite-controls">
+                                {{ convite_form.mail_destinatario }}
+                                <!-- input class="form-control"
+                                    id="friend-email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="Insira um endereço de e-mail"
+                                    autocomplete="email"
+                                    required -->
+                                <button class="btn btn-primary" type="submit">Convidar</button>
+                            </div>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </section>
+            <section class="content-card balance-card" aria-labelledby="balances-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Balanço</p>
+                        <h2 id="balances-title">Saldos do grupo</h2>
+                    </div>
+                </div>
                 {% if grupo_selecionado %}
                     {% if valores_individuais %}
                         {% for pessoa, saldo in valores_individuais.items %}
-                            <p>{{ pessoa }}: R$ {{ saldo|floatformat:2 }}</p>
+                            <p class="balance-row"><span>{{ pessoa }}</span><strong> R$ {{ saldo|floatformat:2 }}</strong></p>
                         {% endfor %}
+                    {% else %}
+                        <p class="empty-state">Nenhum saldo disponível para este grupo.</p>
                     {% endif %}
+                {% else %}
+                    <p class="empty-state">Selecione um grupo para visualizar os saldos.</p>
                 {% endif %}
             </section>
         </aside>

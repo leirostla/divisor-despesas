@@ -1,18 +1,16 @@
-from decimal import Decimal
 
-valor = Decimal("100")
-quantidade = 3
+dados = {"Zeca": 30, "Ana": 25, "Maria": 22}
 
-total_centavos = int(valor * 100)
-cota_base, centavos_restantes = divmod(total_centavos, quantidade)
+curioso = sorted(dados.items())
 
-cotas_centavos = [
-    cota_base + (1 if indice < centavos_restantes else 0)
-    for indice in range(quantidade)
-]
+# Cria um novo dicionário ordenado alfabeticamente pelas chaves
+dados = dict(sorted(dados.items()))
 
-cotas = [Decimal(centavos) / 100 for centavos in cotas_centavos]
-print(cotas)
+print(dados)
+print(curioso)
+print(type(curioso[0]))
+# Saída: {'Ana': 25, 'Maria': 22, 'Zeca': 30}
+
 
 
 # [Decimal('24.38'), Decimal('24.38'),

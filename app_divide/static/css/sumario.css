@@ -1,5 +1,6 @@
 .summary-layout { display: grid; grid-template-columns: minmax(13.5rem,16rem) minmax(0,1fr) minmax(13rem,17rem); gap: 1.5rem; padding-block: 2rem; align-items: start; }
 .summary-sidebar, .summary-aside { position: sticky; top: 6.5rem; }
+.summary-aside { display: grid; gap: 1rem; }
 .summary-sidebar, .content-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
 .sidebar-section, .content-card { padding: 1.25rem; }
 .sidebar-section + .sidebar-section { border-top: 1px solid var(--color-border); }
@@ -31,8 +32,19 @@ a.sidebar-item.is-active { color: var(--color-primary); }
 .expense-info small { color: var(--color-muted); }
 .expense-value { white-space: nowrap; font-size: .95rem; }
 .expense-empty { padding: 2rem 0; text-align: center; }
-.undefined-card { min-height: 12rem; display: grid; place-items: center; }
-.undefined-card p { margin: 0; color: var(--color-muted); }
+.friends-card .section-heading, .balance-card .section-heading { margin-bottom: .75rem; }
+.friends-card h2, .balance-card h2 { margin: 0; font-size: 1rem; }
+.friends-list { max-height: 17rem; display: grid; gap: .25rem; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.friend-item { display: flex; align-items: center; gap: .7rem; padding: .55rem 0; }
+.friend-item + .friend-item { border-top: 1px solid var(--color-border); }
+.friends-empty { margin-bottom: .75rem; }
+.invite-form { margin: 1rem -1.25rem -1.25rem; padding: 1rem 1.25rem 1.25rem; border-top: 1px solid var(--color-border); }
+.invite-label { display: block; margin-bottom: .55rem; font-size: .9rem; font-weight: 700; }
+.invite-controls { display: grid; gap: .6rem; }
+.invite-controls .btn { justify-self: start; }
+.balance-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin: 0; padding: .65rem 0; color: var(--color-muted); font-size: .8rem; }
+.balance-row + .balance-row { border-top: 1px solid var(--color-border); }
+.balance-row strong { color: var(--color-text); white-space: nowrap; }
 .expense-modal { width: min(calc(100% - 2rem), 32rem); padding: 0; color: var(--color-text); background: var(--color-surface); border: 0; border-radius: 1rem; box-shadow: 0 24px 60px rgba(16,24,40,.22); }
 .expense-modal::backdrop { background: rgba(15,23,42,.55); backdrop-filter: blur(2px); }
 .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.5rem 1.5rem 1rem; }

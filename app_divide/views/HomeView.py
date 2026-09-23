@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from app_divide.forms.despesa_form import DespesaForm
 from app_divide.forms.pagamento_form import PagamentoForm
+from app_divide.forms.amizades_form import ConvidarForm
 from app_divide.models import Grupo, ParticipanteGrupo, Pagamento
 
 from app_divide.models.participacao_despesa import ParticipacaoDespesa
@@ -29,7 +30,7 @@ def sumario_view(request):
     despesas = []
     despesa_form = DespesaForm()
     pagamento_form = None
-    calculos_participacao = None
+    convite_form = ConvidarForm()
     gerenciar_sumario = None
 
     if request.user.is_authenticated:
@@ -84,6 +85,7 @@ def sumario_view(request):
         'despesa_form': despesa_form,
         'valores_individuais': gerenciar_sumario.calcular_valores_individuais() if gerenciar_sumario is not None else {},
         'pagamento_form': pagamento_form,
+        'convite_form': convite_form,
     }
     return render(request, template_name='home/sumario.html', context=context, status=200)
 
